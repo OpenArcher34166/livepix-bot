@@ -1,14 +1,16 @@
 const express = require("express");
 const { Client, GatewayIntentBits } = require("discord.js");
 
+const filaController = require("./src/controllers/filaController");
+
 // =========================
-// 🌐 EXPRESS (WEBHOOK + RENDER)
+// 🌐 EXPRESS SERVER
 // =========================
 const app = express();
 app.use(express.json());
 
 // =========================
-// 🔥 WEBHOOK LIVEPIX
+// 💰 LIVEPIX WEBHOOK
 // =========================
 app.post("/webhook/livepix", async (req, res) => {
   try {
@@ -20,23 +22,35 @@ app.post("/webhook/livepix", async (req, res) => {
     const id = data.id_freefire;
     const valor = Number(data.valor);
 
-    if (!nome || !id || !valor) {
+    if (!nome || !id || isNaN(valor) || valor <= 0) {
       return res.status(400).send("Dados inválidos");
     }
 
-    const filaController = require("./src/controllers/filaController");
-
-    await filaController.adicionar(nome, id, valor);
+    // 🔥 REGRA PROFISSIONAL:
+    // valor vira crédito, partidas podem ser calculadas depois
+    await filaController.adicionarJogador(
+      nome,
+      id,
+      valor,
+      0 // partidas iniciais (ou você pode calcular depois)
+    );
 
     return res.status(200).send("OK");
   } catch (err) {
-    console.log("Erro webhook:", err);
-    return res.status(500).send("error");
+    console.log("❌ ERRO WEBHOOK:", err);
+    return res.status(500).send("erro interno");
   }
 });
 
 // =========================
-// 🌐 PORTA RENDER
+// 🌐 ROTA DE TESTE (OPCIONAL)
+// =========================
+app.get("/", (req, res) => {
+  res.send("🤖 LivePix Bot Online");
+});
+
+// =========================
+// 🚀 PORTA RENDER
 // =========================
 const PORT = process.env.PORT || 3000;
 
