@@ -8,22 +8,28 @@ module.exports = (client) => {
     const args = message.content.trim().split(" ");
     const cmd = args[0];
 
+    const isValidNumber = (value) => !isNaN(value) && Number(value) > 0;
+
     try {
 
       // =========================
-      // 🎮 ADD MANUAL (LIBERADO)
+      // 🎮 ADD MANUAL
       // =========================
       if (cmd === "!add") {
         const id = args[1];
         const partidas = Number(args[2]);
-        const nome = args.slice(3).join(" ");
+        const nome = args.slice(3).join(" ").trim();
 
-        if (!id || !nome || isNaN(partidas)) {
-          return message.reply("Uso: !add id partidas nome");
+        if (!id || !nome || !isValidNumber(partidas)) {
+          return message.reply("❌ Uso correto: !add id partidas nome");
+        }
+
+        if (nome.length < 2) {
+          return message.reply("❌ Nome inválido");
         }
 
         await filaController.adicionarManual(nome, id, partidas);
-        return message.reply("🎮 Partidas adicionadas (manual)");
+        return message.reply("🎮 Jogador adicionado com sucesso!");
       }
 
       // =========================
@@ -37,59 +43,74 @@ module.exports = (client) => {
         const id = args[1];
         const valor = Number(args[2]);
 
-        if (!id || isNaN(valor) || valor <= 0) {
-          return message.reply("Uso: !credito id valor válido");
+        if (!id || !isValidNumber(valor)) {
+          return message.reply("❌ Uso: !credito id valor válido");
         }
 
         await filaController.adicionar("LIVEPIX", id, valor);
 
-        return message.reply(
-          `💰 Crédito adicionado: R$ ${valor.toFixed(2)}`
-        );
+        return message.reply(`💰 Crédito adicionado: R$ ${valor.toFixed(2)}`);
       }
 
       // =========================
-      // 📋 FILA (TODOS)
+      // 📋 FILA
       // =========================
       if (cmd === "!fila") {
         const fila = await filaController.listar();
 
+        if (!fila || fila.length === 0) {
+          return message.reply("📋 Fila vazia.");
+        }
+
         const texto = fila.map(j =>
-          `Nome: ${j.nome_pix || "N/A"} | ID: ${j.id_freefire} | Partidas: ${j.partidas} | Crédito: R$ ${(Number(j.saldo_credito || 0)).toFixed(2)}`
+          `Nome: ${j.nome_pix || "N/A"} | ID: ${j.id_freefire} | Partidas: ${j.partidas || 0} | Crédito: R$ ${(Number(j.saldo_credito || 0)).toFixed(2)}`
         ).join("\n");
 
         return message.reply("📋 Fila:\n" + texto);
       }
 
       // =========================
-      // 🎮 JOGAR (TODOS)
+      // 🎮 JOGAR
       // =========================
       if (cmd === "!jogar") {
-        const res = await filaController.jogar(args[1]);
+        const id = args[1];
 
-        if (!res) return message.reply("Não encontrado");
-        if (res.finalizado) return message.reply("🏁 Finalizado!");
+        if (!id) {
+          return message.reply("❌ Use: !jogar id");
+        }
+
+        const res = await filaController.jogar(id);
+
+        if (!res) return message.reply("❌ Jogador não encontrado");
+        if (res.finalizado) return message.reply("🏁 Jogador finalizado!");
 
         return message.reply(`🎮 Restam ${res.partidas}`);
       }
 
       // =========================
-      // 🔄 RENOMEAR (MOD+)
+      // 🔄 RENOMEAR
       // =========================
       if (cmd === "!renomear") {
         if (!hasPermission(message, "MOD")) {
           return message.reply("❌ Sem permissão.");
         }
 
-        const ok = await filaController.renomear(args[1], args[2]);
+        const oldId = args[1];
+        const newId = args[2];
 
-        if (!ok) return message.reply("Não encontrado");
+        if (!oldId || !newId) {
+          return message.reply("❌ Uso: !renomear antigo novo");
+        }
 
-        return message.reply(`✅ Alterado`);
+        const ok = await filaController.renomear(oldId, newId);
+
+        if (!ok) return message.reply("❌ Não encontrado");
+
+        return message.reply("✅ ID atualizado com sucesso");
       }
 
       // =========================
-      // ➕ ADD PARTIDAS (MOD+)
+      // ➕ ADD PARTIDAS
       // =========================
       if (cmd === "!addpartidas") {
         if (!hasPermission(message, "MOD")) {
@@ -99,15 +120,19 @@ module.exports = (client) => {
         const id = args[1];
         const qtd = Number(args[2]);
 
+        if (!id || !isValidNumber(qtd)) {
+          return message.reply("❌ Uso: !addpartidas id quantidade");
+        }
+
         const ok = await filaController.addPartidas(id, qtd);
 
-        if (!ok) return message.reply("Não encontrado");
+        if (!ok) return message.reply("❌ Não encontrado");
 
         return message.reply(`➕ ${qtd} partidas adicionadas`);
       }
 
       // =========================
-      // ➖ REM PARTIDAS (MOD+)
+      // ➖ REM PARTIDAS
       // =========================
       if (cmd === "!rempartidas") {
         if (!hasPermission(message, "MOD")) {
@@ -117,20 +142,28 @@ module.exports = (client) => {
         const id = args[1];
         const qtd = Number(args[2]);
 
+        if (!id || !isValidNumber(qtd)) {
+          return message.reply("❌ Uso: !rempartidas id quantidade");
+        }
+
         const ok = await filaController.remPartidas(id, qtd);
 
-        if (!ok) return message.reply("Não encontrado");
+        if (!ok) return message.reply("❌ Não encontrado");
 
         return message.reply(`➖ ${qtd} partidas removidas`);
       }
 
       // =========================
-      // 📊 INFO (TODOS)
+      // 📊 INFO
       // =========================
       if (cmd === "!info") {
-        const j = await filaController.info(args[1]);
+        const id = args[1];
 
-        if (!j) return message.reply("Não encontrado");
+        if (!id) return message.reply("❌ Use: !info id");
+
+        const j = await filaController.info(id);
+
+        if (!j) return message.reply("❌ Não encontrado");
 
         return message.reply(
 `📊 INFO
@@ -141,7 +174,7 @@ Partidas: ${j.partidas}`
       }
 
       // =========================
-      // 💣 RESET (ADMIN ONLY)
+      // 💣 RESET
       // =========================
       if (cmd === "!resetfila") {
         if (!hasPermission(message, "ADMIN")) {
@@ -153,99 +186,25 @@ Partidas: ${j.partidas}`
       }
 
       // =========================
-      // 🏆 TOP 10 (TODOS)
+      // 🏆 TOP 10
       // =========================
       if (cmd === "!top10") {
         const top = await filaController.topDoadores();
 
+        if (!top || top.length === 0) {
+          return message.reply("🏆 Sem dados ainda.");
+        }
+
         const texto = top.map((d, i) =>
-          `#${i + 1} ${d.nome_pix} | R$ ${Number(d.total).toFixed(2)}`
+          `#${i + 1} ${d.nome_pix || "N/A"} | R$ ${Number(d.total || 0).toFixed(2)}`
         ).join("\n");
 
         return message.reply("🏆 TOP 10:\n" + texto);
       }
 
-      // =========================
-      // ❓ HELP (TODOS)
-      // =========================
-      if (cmd === "!help") {
-        const { EmbedBuilder } = require("discord.js");
-
-        const embed = new EmbedBuilder()
-          .setColor("#00AEEF")
-          .setTitle("🤖 Sistema LivePix Bot")
-          .setDescription("Sistema profissional de fila e créditos")
-          .addFields(
-            {
-              name: "🎮 JOGADORES",
-              value:
-                "`!add` - Adiciona jogador\n" +
-                "`!fila` - Mostra fila\n" +
-                "`!jogar` - Registra partida\n" +
-                "`!info` - Info jogador",
-            },
-            {
-              name: "💰 FINANCEIRO",
-              value:
-                "`!credito` - Adiciona crédito\n" +
-                "`!top10` - Ranking doadores",
-            },
-            {
-              name: "⚙️ ADMIN / MOD",
-              value:
-                "`!addpartidas`\n!rempartidas\n!renomear\n!resetfila"
-            }
-          )
-          .setFooter({ text: "LivePix Bot • Sistema profissional" })
-          .setTimestamp();
-
-        return message.reply({ embeds: [embed] });
-      }
-
-   const {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  EmbedBuilder
-} = require("discord.js");
-
-if (cmd === "!painel") {
-
-  const embed = new EmbedBuilder()
-    .setColor("#00AEEF")
-    .setTitle("🎮 Painel LivePix Bot")
-    .setDescription("Controle rápido da fila de partidas")
-    .addFields(
-      { name: "📋 Fila", value: "Ver jogadores na fila", inline: true },
-      { name: "🏆 Ranking", value: "Top doadores", inline: true },
-      { name: "🎮 Jogar", value: "Registrar partida", inline: true }
-    );
-
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId("fila")
-      .setLabel("📋 Fila")
-      .setStyle(ButtonStyle.Primary),
-
-    new ButtonBuilder()
-      .setCustomId("top10")
-      .setLabel("🏆 Top 10")
-      .setStyle(ButtonStyle.Success),
-
-    new ButtonBuilder()
-      .setCustomId("jogar")
-      .setLabel("🎮 Jogar")
-      .setStyle(ButtonStyle.Danger)
-  );
-
-  return message.reply({
-    embeds: [embed],
-    components: [row]
-  });
-}
     } catch (err) {
-      console.log(err);
-      return message.reply("Erro interno");
+      console.error("❌ ERRO MESSAGECREATE:", err);
+      return message.reply("❌ Erro interno no sistema.");
     }
   });
 };
