@@ -55,15 +55,15 @@ app.post("/webhook/livepix", async (req, res) => {
     return res.status(200).send("OK");
 
   } catch (err) {
-    console.log("❌ ERRO WEBHOOK:");
-    console.log(err);
-    console.log(err?.stack);
+  console.log("🔥🔥🔥 ERRO REAL COMPLETO 🔥🔥🔥");
+  console.log(err);
+  console.log(err?.stack);
 
-    return res.status(500).send({
-      error: "erro interno",
-      details: err?.message
-    });
-  }
+  return res.status(500).send({
+    message: err?.message,
+    full: err
+  });
+}
 });
 
 // =========================
