@@ -2,10 +2,20 @@ const express = require("express");
 const filaController = require("./src/controllers/filaController");
 
 const app = express();
-app.use(express.json());
 
 // =========================
-// 🌐 TESTE DA API
+// 🔧 MIDDLEWARES (IMPORTANTE NO RENDER)
+// =========================
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+// =========================
+// 🔥 LOG DE START
+// =========================
+console.log("🔥 SERVER INICIADO");
+
+// =========================
+// 🌐 ROTA DE TESTE
 // =========================
 app.get("/", (req, res) => {
   res.send("LivePix Bot Online");
@@ -15,23 +25,25 @@ app.get("/", (req, res) => {
 // 💰 WEBHOOK LIVEPIX
 // =========================
 app.post("/webhook/livepix", async (req, res) => {
+  console.log("🔥 CHEGOU NO WEBHOOK");
+  console.log("BODY:", req.body);
+
   try {
-    console.log("💰 RECEBIDO:", req.body);
+    const { nome_pix, id_freefire, valor } = req.body || {};
 
-    const { nome_pix, id_freefire, valor } = req.body;
-
-    // validação básica
     if (!nome_pix || !id_freefire || !valor) {
+      console.log("❌ DADOS INVÁLIDOS");
       return res.status(400).send("dados inválidos");
     }
 
     const valorNum = Number(valor);
 
     if (isNaN(valorNum)) {
+      console.log("❌ VALOR INVÁLIDO");
       return res.status(400).send("valor inválido");
     }
 
-    // 🔥 CHAMADA CORRETA (AGORA CERTO)
+    // 🔥 CHAMADA CORRETA DO CONTROLLER
     await filaController.adicionar(
       nome_pix,
       id_freefire,
@@ -39,16 +51,23 @@ app.post("/webhook/livepix", async (req, res) => {
       0
     );
 
+    console.log("✅ PROCESSADO COM SUCESSO");
     return res.status(200).send("OK");
 
   } catch (err) {
-    console.log("❌ ERRO WEBHOOK:", err);
-    return res.status(500).send("erro interno");
+    console.log("❌ ERRO WEBHOOK:");
+    console.log(err);
+    console.log(err?.stack);
+
+    return res.status(500).send({
+      error: "erro interno",
+      details: err?.message
+    });
   }
 });
 
 // =========================
-// 🚀 PORTA DO RENDER
+// 🚀 PORTA RENDER
 // =========================
 const PORT = process.env.PORT || 3000;
 
