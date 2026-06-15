@@ -4,7 +4,7 @@ const filaController = require("./src/controllers/filaController");
 const app = express();
 
 // =========================
-// 🔧 MIDDLEWARES (IMPORTANTE NO RENDER)
+// 🔧 MIDDLEWARES (RENDER SAFE)
 // =========================
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -15,10 +15,10 @@ app.use(express.urlencoded({ extended: true }));
 console.log("🔥 SERVER INICIADO");
 
 // =========================
-// 🌐 ROTA DE TESTE
+// 🌐 HEALTH CHECK (IMPORTANTE NO RENDER)
 // =========================
 app.get("/", (req, res) => {
-  res.send("LivePix Bot Online");
+  res.status(200).send("LivePix Bot Online");
 });
 
 // =========================
@@ -31,19 +31,20 @@ app.post("/webhook/livepix", async (req, res) => {
   try {
     const { nome_pix, id_freefire, valor } = req.body || {};
 
-    if (!nome_pix || !id_freefire || !valor) {
+    // validação forte (evita crash)
+    if (!nome_pix || !id_freefire || valor === undefined) {
       console.log("❌ DADOS INVÁLIDOS");
       return res.status(400).send("dados inválidos");
     }
 
     const valorNum = Number(valor);
 
-    if (isNaN(valorNum)) {
+    if (!Number.isFinite(valorNum)) {
       console.log("❌ VALOR INVÁLIDO");
       return res.status(400).send("valor inválido");
     }
 
-    // 🔥 CHAMADA CORRETA DO CONTROLLER
+    // chama controller
     await filaController.adicionar(
       nome_pix,
       id_freefire,
@@ -55,24 +56,30 @@ app.post("/webhook/livepix", async (req, res) => {
     return res.status(200).send("OK");
 
   } catch (err) {
-  console.log("🔥🔥🔥 ERRO REAL COMPLETO 🔥🔥🔥");
-  console.log(err);
-  console.log(err?.stack);
+    console.log("🔥 ERRO NO WEBHOOK");
+    console.log(err?.message);
+    console.log(err?.stack);
 
-  return res.status(500).send({
-    message: err?.message,
-    full: err
-  });
-}
+    return res.status(500).send("erro interno");
+  }
 });
 
 // =========================
-// 🚀 PORTA RENDER
+// 🚀 START SERVER (RENDER SAFE)
 // =========================
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log("🌐 Express rodando na porta", PORT);
+});
+
+// evita crash silencioso no Render
+process.on("unhandledRejection", (err) => {
+  console.log("❌ UNHANDLED REJECTION:", err);
+});
+
+process.on("uncaughtException", (err) => {
+  console.log("❌ UNCAUGHT EXCEPTION:", err);
 });
 
 // =========================
