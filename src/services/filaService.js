@@ -1,110 +1,166 @@
 const filaModel = require("../models/filaModel");
+const historicoModel = require("../models/historicoModel");
 
-// 🔥 FUNÇÃO EXISTENTE (CRÉDITO / LIVEPIX SIMULADO)
+// =========================
+// 💰 LIVEPIX / CRÉDITO
+// =========================
 async function adicionar(nome, id, valor) {
   const jogador = await filaModel.buscarPorIdFF(id);
 
-  if (!jogador) {
-    const partidas = Math.floor(valor / 2);
-    const credito = +(valor - partidas * 2).toFixed(2);
+  let partidasGeradas = 0;
 
-    return filaModel.adicionarJogador(
+  if (!jogador) {
+    partidasGeradas = Math.floor(valor / 2);
+    const credito = +(valor - partidasGeradas * 2).toFixed(2);
+
+    await filaModel.adicionarJogador(
       nome,
       id,
       valor,
-      partidas,
+      partidasGeradas,
       credito
     );
+
+    await historicoModel.registrar(
+      "DOACAO",
+      nome,
+      id,
+      valor,
+      partidasGeradas
+    );
+
+    return;
   }
 
   const total = Number(valor) + Number(jogador.saldo_credito || 0);
 
-  const partidasNovas = Math.floor(total / 2);
-  const credito = +(total - partidasNovas * 2).toFixed(2);
+  partidasGeradas = Math.floor(total / 2);
 
-  return filaModel.atualizarJogador(
+  const credito = +(total - partidasGeradas * 2).toFixed(2);
+
+  await filaModel.atualizarJogador(
     id,
-    jogador.partidas + partidasNovas,
+    jogador.partidas + partidasGeradas,
     credito,
     valor
   );
+
+  await historicoModel.registrar(
+    "DOACAO",
+    nome,
+    id,
+    valor,
+    partidasGeradas
+  );
 }
 
-// 🔥 NOVO: ADICIONAR SÓ PARTIDAS (MANUAL)
+// =========================
+// 🎮 ADD MANUAL
+// =========================
 async function adicionarManual(nome, id, partidas) {
   const jogador = await filaModel.buscarPorIdFF(id);
 
   if (!jogador) {
-    return filaModel.adicionarJogador(nome, id, 0, partidas, 0);
+    await filaModel.adicionarJogador(
+      nome,
+      id,
+      0,
+      partidas,
+      0
+    );
+  } else {
+    await filaModel.atualizarJogador(
+      id,
+      jogador.partidas + partidas,
+      jogador.saldo_credito || 0,
+      0
+    );
   }
 
-  return filaModel.atualizarJogador(
+  await historicoModel.registrar(
+    "ADD_MANUAL",
+    nome,
     id,
-    jogador.partidas + partidas,
-    jogador.saldo_credito || 0,
-    0
+    0,
+    partidas
   );
 }
 
-// resto igual
+// =========================
+// 📋 LISTAR FILA
+// =========================
 async function listar() {
   return filaModel.listarFila();
 }
 
+// =========================
+// 🎮 JOGAR
+// =========================
 async function jogar(id) {
-  const j = await filaModel.buscarPorIdFF(id);
-  if (!j) return null;
+  const jogador = await filaModel.buscarPorIdFF(id);
+
+  if (!jogador) return null;
 
   await filaModel.removerPartidas(id, 1);
 
-  const updated = await filaModel.buscarPorIdFF(id);
+  await historicoModel.registrar(
+    "JOGOU",
+    jogador.nome_pix,
+    id,
+    0,
+    1
+  );
 
-  if (updated.partidas <= 0) {
+  const atualizado = await filaModel.buscarPorIdFF(id);
+
+  if (atualizado.partidas <= 0) {
     await filaModel.finalizarJogador(id);
-    return { finalizado: true };
+
+    await historicoModel.registrar(
+      "FINALIZADO",
+      jogador.nome_pix,
+      id,
+      0,
+      0
+    );
+
+    return {
+      finalizado: true
+    };
   }
 
-  return { finalizado: false, partidas: updated.partidas };
+  return {
+    finalizado: false,
+    partidas: atualizado.partidas
+  };
 }
 
+// =========================
+// ✏️ RENOMEAR
+// =========================
 async function renomear(a, b) {
-  const j = await filaModel.buscarPorIdFF(a);
-  if (!j) return null;
+  const jogador = await filaModel.buscarPorIdFF(a);
+
+  if (!jogador) return null;
 
   await filaModel.renomearId(a, b);
+
+  await historicoModel.registrar(
+    "RENOMEAR",
+    jogador.nome_pix,
+    `${a} -> ${b}`,
+    0,
+    0
+  );
+
   return true;
 }
 
+// =========================
+// 🏆 TOP DOADORES
+// =========================
 async function topDoadores() {
   return filaModel.topDoadores();
-}
-
-async function addPartidas(id, qtd) {
-  const jogador = await filaModel.buscarPorIdFF(id);
-
-  if (!jogador) return null;
-
-  await filaModel.adicionarPartidas(id, qtd);
-
-  return true;
-}
-
-async function remPartidas(id, qtd) {
-  const jogador = await filaModel.buscarPorIdFF(id);
-
-  if (!jogador) return null;
-
-  await filaModel.removerPartidas(id, qtd);
-
-  return true;
-}
-
-async function info(id) {
-  return await filaModel.buscarPorIdFF(id);
-}
-
-async function reset() {
-  return await filaModel.resetFila();
 }
 
 module.exports = {
@@ -113,9 +169,5 @@ module.exports = {
   listar,
   jogar,
   renomear,
-  topDoadores,
-  addPartidas,
-  remPartidas,
-  info,
-  reset
+  topDoadores
 };
