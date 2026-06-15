@@ -1,5 +1,6 @@
 const filaController = require("../controllers/filaController");
 const hasPermission = require("../middleware/hasPermission");
+const atualizarPainel = require("../utils/atualizarPainel");
 
 module.exports = (client) => {
   client.on("messageCreate", async (message) => {
@@ -29,11 +30,13 @@ module.exports = (client) => {
         }
 
         await filaController.adicionarManual(nome, id, partidas);
+        await atualizarPainel(client);
+
         return message.reply("🎮 Jogador adicionado com sucesso!");
       }
 
       // =========================
-      // 💰 CRÉDITO (MOD+)
+      // 💰 CRÉDITO
       // =========================
       if (cmd === "!credito") {
         if (!hasPermission(message, "MOD")) {
@@ -44,10 +47,11 @@ module.exports = (client) => {
         const valor = Number(args[2]);
 
         if (!id || !isValidNumber(valor)) {
-          return message.reply("❌ Uso: !credito id valor válido");
+          return message.reply("❌ Uso: !credito id valor");
         }
 
         await filaController.adicionar("LIVEPIX", id, valor);
+        await atualizarPainel(client);
 
         return message.reply(`💰 Crédito adicionado: R$ ${valor.toFixed(2)}`);
       }
@@ -63,7 +67,7 @@ module.exports = (client) => {
         }
 
         const texto = fila.map(j =>
-          `Nome: ${j.nome_pix || "N/A"} | ID: ${j.id_freefire} | Partidas: ${j.partidas || 0} | Crédito: R$ ${(Number(j.saldo_credito || 0)).toFixed(2)}`
+          `Nome: ${j.nome_pix || "N/A"} | ID: ${j.id_freefire} | Partidas: ${j.partidas || 0} | Crédito: R$ ${Number(j.saldo_credito || 0).toFixed(2)}`
         ).join("\n");
 
         return message.reply("📋 Fila:\n" + texto);
@@ -80,6 +84,8 @@ module.exports = (client) => {
         }
 
         const res = await filaController.jogar(id);
+
+        await atualizarPainel(client);
 
         if (!res) return message.reply("❌ Jogador não encontrado");
         if (res.finalizado) return message.reply("🏁 Jogador finalizado!");
@@ -104,6 +110,8 @@ module.exports = (client) => {
 
         const ok = await filaController.renomear(oldId, newId);
 
+        await atualizarPainel(client);
+
         if (!ok) return message.reply("❌ Não encontrado");
 
         return message.reply("✅ ID atualizado com sucesso");
@@ -125,6 +133,8 @@ module.exports = (client) => {
         }
 
         const ok = await filaController.addPartidas(id, qtd);
+
+        await atualizarPainel(client);
 
         if (!ok) return message.reply("❌ Não encontrado");
 
@@ -148,6 +158,8 @@ module.exports = (client) => {
 
         const ok = await filaController.remPartidas(id, qtd);
 
+        await atualizarPainel(client);
+
         if (!ok) return message.reply("❌ Não encontrado");
 
         return message.reply(`➖ ${qtd} partidas removidas`);
@@ -159,22 +171,30 @@ module.exports = (client) => {
       if (cmd === "!info") {
         const id = args[1];
 
-        if (!id) return message.reply("❌ Use: !info id");
+        if (!id) {
+          return message.reply("❌ Use: !info id");
+        }
 
         const j = await filaController.info(id);
 
-        if (!j) return message.reply("❌ Não encontrado");
+        if (!j) {
+          return message.reply("❌ Não encontrado");
+        }
 
         return message.reply(
 `📊 INFO
-ID: ${j.id_freefire}
-Pix: ${j.nome_pix}
-Partidas: ${j.partidas}`
+
+👤 Nome: ${j.nome_pix}
+🆔 ID: ${j.id_freefire}
+🎮 Partidas: ${j.partidas}
+💰 Total: R$ ${Number(j.valor || 0).toFixed(2)}
+💳 Crédito: R$ ${Number(j.saldo_credito || 0).toFixed(2)}
+📌 Status: ${j.status}`
         );
       }
 
       // =========================
-      // 💣 RESET
+      // 💣 RESET FILA
       // =========================
       if (cmd === "!resetfila") {
         if (!hasPermission(message, "ADMIN")) {
@@ -182,6 +202,8 @@ Partidas: ${j.partidas}`
         }
 
         await filaController.reset();
+        await atualizarPainel(client);
+
         return message.reply("💣 Fila resetada!");
       }
 

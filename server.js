@@ -1,24 +1,22 @@
 const express = require("express");
 const filaController = require("./src/controllers/filaController");
+const atualizarPainel = require("./src/utils/atualizarPainel");
 
 const app = express();
 
 // =========================
-// 🔧 MIDDLEWARES (RENDER SAFE)
+// 🔧 MIDDLEWARES
 // =========================
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// =========================
-// 🔥 LOG DE START
-// =========================
 console.log("🔥 SERVER INICIADO");
 
 // =========================
-// 🌐 HEALTH CHECK (IMPORTANTE NO RENDER)
+// 🌐 ROTA TESTE
 // =========================
 app.get("/", (req, res) => {
-  res.status(200).send("LivePix Bot Online");
+  res.send("LivePix Bot Online");
 });
 
 // =========================
@@ -31,55 +29,50 @@ app.post("/webhook/livepix", async (req, res) => {
   try {
     const { nome_pix, id_freefire, valor } = req.body || {};
 
-    // validação forte (evita crash)
-    if (!nome_pix || !id_freefire || valor === undefined) {
-      console.log("❌ DADOS INVÁLIDOS");
+    if (!nome_pix || !id_freefire || !valor) {
       return res.status(400).send("dados inválidos");
     }
 
     const valorNum = Number(valor);
 
-    if (!Number.isFinite(valorNum)) {
-      console.log("❌ VALOR INVÁLIDO");
+    if (isNaN(valorNum)) {
       return res.status(400).send("valor inválido");
     }
 
-    // chama controller
+    // Salva no banco
     await filaController.adicionar(
       nome_pix,
       id_freefire,
-      valorNum,
-      0
+      valorNum
     );
 
+    // Atualiza o painel do Discord
+    if (client?.isReady()) {
+      await atualizarPainel(client);
+    }
+
     console.log("✅ PROCESSADO COM SUCESSO");
+
     return res.status(200).send("OK");
 
   } catch (err) {
-    console.log("🔥 ERRO NO WEBHOOK");
-    console.log(err?.message);
+    console.log("🔥🔥🔥 ERRO REAL COMPLETO 🔥🔥🔥");
+    console.log(err);
     console.log(err?.stack);
 
-    return res.status(500).send("erro interno");
+    return res.status(500).send({
+      message: err?.message
+    });
   }
 });
 
 // =========================
-// 🚀 START SERVER (RENDER SAFE)
+// 🚀 PORTA RENDER
 // =========================
 const PORT = process.env.PORT || 3000;
 
-const server = app.listen(PORT, () => {
+app.listen(PORT, () => {
   console.log("🌐 Express rodando na porta", PORT);
-});
-
-// evita crash silencioso no Render
-process.on("unhandledRejection", (err) => {
-  console.log("❌ UNHANDLED REJECTION:", err);
-});
-
-process.on("uncaughtException", (err) => {
-  console.log("❌ UNCAUGHT EXCEPTION:", err);
 });
 
 // =========================

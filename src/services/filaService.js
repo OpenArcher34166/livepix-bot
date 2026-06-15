@@ -79,11 +79,43 @@ async function topDoadores() {
   return filaModel.topDoadores();
 }
 
+async function addPartidas(id, qtd) {
+  const jogador = await filaModel.buscarPorIdFF(id);
+
+  if (!jogador) return null;
+
+  await filaModel.adicionarPartidas(id, qtd);
+
+  return true;
+}
+
+async function remPartidas(id, qtd) {
+  const jogador = await filaModel.buscarPorIdFF(id);
+
+  if (!jogador) return null;
+
+  await filaModel.removerPartidas(id, qtd);
+
+  return true;
+}
+
+async function info(id) {
+  return await filaModel.buscarPorIdFF(id);
+}
+
+async function reset() {
+  return await filaModel.resetFila();
+}
+
 module.exports = {
   adicionar,
   adicionarManual,
   listar,
   jogar,
   renomear,
-  topDoadores
+  topDoadores,
+  addPartidas,
+  remPartidas,
+  info,
+  reset
 };

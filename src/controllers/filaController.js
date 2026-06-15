@@ -1,33 +1,33 @@
 const filaService = require("../services/filaService");
 
 module.exports = {
-  // 💰 LivePix automático
-  adicionar: async (nome, id, valor) => {
-    return await filaService.adicionar(nome, id, valor);
-  },
+  adicionar: (nome, id, valor) =>
+    filaService.adicionar(nome, id, valor),
 
-  // 🎮 Adição manual de partidas
-  adicionarManual: async (nome, id, partidas) => {
-    return await filaService.adicionarManual(nome, id, partidas);
-  },
+  adicionarManual: (nome, id, partidas) =>
+    filaService.adicionarManual(nome, id, partidas),
 
-  // 📋 Lista fila
-  listar: async () => {
-    return await filaService.listar();
-  },
+  listar: () =>
+    filaService.listar(),
 
-  // 🎮 Remove partida quando joga
-  jogar: async (id) => {
-    return await filaService.jogar(id);
-  },
+  jogar: (id) =>
+    filaService.jogar(id),
 
-  // ✏️ Renomear ID FF
-  renomear: async (a, b) => {
-    return await filaService.renomear(a, b);
-  },
+  renomear: (a, b) =>
+    filaService.renomear(a, b),
 
-  // 🏆 Top doadores
-  topDoadores: async () => {
-    return await filaService.topDoadores();
-  }
+  topDoadores: () =>
+    filaService.topDoadores(),
+
+  addPartidas: (id, qtd) =>
+    filaService.addPartidas(id, qtd),
+
+  remPartidas: (id, qtd) =>
+    filaService.remPartidas(id, qtd),
+
+  info: (id) =>
+    filaService.info(id),
+
+  reset: () =>
+    filaService.reset()
 };
