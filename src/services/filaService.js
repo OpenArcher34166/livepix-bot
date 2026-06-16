@@ -161,13 +161,81 @@ async function renomear(a, b) {
 // =========================
 async function topDoadores() {
   return filaModel.topDoadores();
+}  
+// =========================
+// ➕ ADD PARTIDAS
+// =========================
+async function addPartidas(id, qtd) {
+  const jogador = await filaModel.buscarPorIdFF(id);
+
+  if (!jogador) return false;
+
+  await filaModel.adicionarPartidas(id, qtd);
+
+  await historicoModel.registrar(
+    "ADD_PARTIDAS",
+    jogador.nome_pix,
+    id,
+    0,
+    qtd
+  );
+
+  return true;
 }
 
+// =========================
+// ➖ REM PARTIDAS
+// =========================
+async function remPartidas(id, qtd) {
+  const jogador = await filaModel.buscarPorIdFF(id);
+
+  if (!jogador) return false;
+
+  await filaModel.removerPartidas(id, qtd);
+
+  await historicoModel.registrar(
+    "REM_PARTIDAS",
+    jogador.nome_pix,
+    id,
+    0,
+    qtd
+  );
+
+  return true;
+}
+
+// =========================
+// 📊 INFO
+// =========================
+async function info(id) {
+  return filaModel.buscarPorIdFF(id);
+}
+
+// =========================
+// 💣 RESET
+// =========================
+async function reset() {
+  await filaModel.resetFila();
+
+  await historicoModel.registrar(
+    "RESET",
+    "SISTEMA",
+    "FILA",
+    0,
+    0
+  );
+
+  return true;
+}
 module.exports = {
   adicionar,
   adicionarManual,
   listar,
   jogar,
   renomear,
-  topDoadores
+  topDoadores,
+  addPartidas,
+  remPartidas,
+  info,
+  reset
 };

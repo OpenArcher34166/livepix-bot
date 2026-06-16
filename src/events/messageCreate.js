@@ -60,18 +60,33 @@ module.exports = (client) => {
       // 📋 FILA
       // =========================
       if (cmd === "!fila") {
-        const fila = await filaController.listar();
+  const fila = await filaController.listar();
 
-        if (!fila || fila.length === 0) {
-          return message.reply("📋 Fila vazia.");
-        }
+  if (!fila || fila.length === 0) {
+    return message.reply("📋 Nenhum jogador na fila.");
+  }
 
-        const texto = fila.map(j =>
-          `Nome: ${j.nome_pix || "N/A"} | ID: ${j.id_freefire} | Partidas: ${j.partidas || 0} | Crédito: R$ ${Number(j.saldo_credito || 0).toFixed(2)}`
-        ).join("\n");
+  let total = 0;
 
-        return message.reply("📋 Fila:\n" + texto);
-      }
+  const texto = fila.map((j, i) => {
+    total += Number(j.valor || 0);
+
+    return `${i + 1}️⃣ ${j.nome_pix}
+ID: ${j.id_freefire}
+🎮 Partidas: ${j.partidas}`;
+  }).join("\n\n");
+
+  return message.reply(
+`📋 FILA DE PARTIDAS
+
+${texto}
+
+━━━━━━━━━━━━━━━
+
+👥 Jogadores: ${fila.length}
+💰 Total arrecadado: R$ ${total.toFixed(2)}`
+  );
+}
 
       // =========================
       // 🎮 JOGAR
