@@ -6,6 +6,11 @@ require("../models/configuracaoModel");
 const setupServidor = require("../utils/setupServidor");
 
 module.exports = (client) => {
+console.log("✅ MESSAGECREATE CARREGADO");
+
+
+
+
   client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
 
