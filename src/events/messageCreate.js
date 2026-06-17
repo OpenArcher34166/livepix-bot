@@ -3,7 +3,7 @@ const hasPermission = require("../middleware/hasPermission");
 const atualizarPainel = require("../utils/atualizarPainel");
 const configuracaoModel =
 require("../models/configuracaoModel");
-
+const setupServidor = require("../utils/setupServidor");
 
 module.exports = (client) => {
   client.on("messageCreate", async (message) => {
@@ -258,7 +258,13 @@ ${texto}
 📌 Status: ${j.status}`
         );
       }
+    // =========================
+    // ⚙️ SETUP
+  if (cmd === "!setup") {
+  console.log("COMANDO SETUP EXECUTADO");
 
+  return message.reply("Setup funcionando");
+}
       // =========================
       // 💣 RESET FILA
       // =========================
