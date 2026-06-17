@@ -258,14 +258,38 @@ ${texto}
 📌 Status: ${j.status}`
         );
       }
-    // =========================
-    // ⚙️ SETUP
-  if (cmd === "!setup") {
-  console.log("COMANDO SETUP EXECUTADO");
+ // =========================
+// ⚙️ SETUP
+// =========================
+if (cmd === "!setup") {
 
-  return message.reply("Setup funcionando");
+  if (!hasPermission(message, "ADMIN")) {
+    return message.reply(
+      "❌ Apenas ADMIN pode usar."
+    );
+  }
+
+  const canais = await setupServidor(
+    message.guild
+  );
+
+  return message.reply(
+`✅ Estrutura criada com sucesso!
+
+📁 Categoria:
+${canais.categoria.name}
+
+🎮 ${canais.fila}
+
+📜 ${canais.historico}
+
+🏆 ${canais.ranking}
+
+🤖 ${canais.comandos}
+
+⚙️ ${canais.admin}`
+  );
 }
-      // =========================
       // 💣 RESET FILA
       // =========================
       if (cmd === "!resetfila") {
