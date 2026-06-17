@@ -9,6 +9,10 @@ module.exports = (client) => {
   client.on("messageCreate", async (message) => {
     if (message.author.bot) return;
 
+    console.log("MENSAGEM RECEBIDA:", message.content);
+
+
+
     const args = message.content.trim().split(" ");
     const cmd = args[0];
 
