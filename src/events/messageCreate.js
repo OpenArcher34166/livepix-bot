@@ -304,7 +304,11 @@ if (cmd === "!setup") {
 
   await message.reply("⚙️ Criando estrutura...");
 
-  await setupServidor(message.guild);
+console.log("ENTROU NO SETUP");
+
+await setupServidor(message.guild);
+
+console.log("SETUP FINALIZADO");
 
   return message.channel.send(
     "✅ Estrutura criada com sucesso!"
