@@ -6,15 +6,15 @@ module.exports = (client) => {
 
       console.log(`🤖 Bot online como ${client.user.tag}`);
 
-      const canal = await client.channels.fetch("1515543183688208404");
+      console.log("READY EXECUTADO");
 
-      console.log("CANAL ENCONTRADO:");
-      console.log(canal?.name);
-      console.log(canal?.id);
+      // NÃO BUSCA MAIS CANAL FIXO
+      // const canal = await client.channels.fetch("1515543183688208404");
 
-      await atualizarPainel(client);
+      // NÃO ATUALIZA PAINEL POR ENQUANTO
+      // await atualizarPainel(client);
 
-      console.log("PAINEL EXECUTADO");
+      console.log("BOT PRONTO");
 
     } catch (err) {
       console.error("ERRO READY:");
