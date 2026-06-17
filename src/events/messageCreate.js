@@ -1,6 +1,9 @@
 const filaController = require("../controllers/filaController");
 const hasPermission = require("../middleware/hasPermission");
 const atualizarPainel = require("../utils/atualizarPainel");
+const configuracaoModel =
+require("../models/configuracaoModel");
+
 
 module.exports = (client) => {
   client.on("messageCreate", async (message) => {
@@ -55,6 +58,54 @@ module.exports = (client) => {
 
         return message.reply(`💰 Crédito adicionado: R$ ${valor.toFixed(2)}`);
       }
+
+    // =========================
+    // 💰 SETPRECO
+    // =========================
+if (cmd === "!setpreco") {
+
+  if (!hasPermission(message, "ADMIN")) {
+    return message.reply(
+      "❌ Apenas ADMIN pode alterar."
+    );
+  }
+
+  const valor = Number(args[1]);
+
+  if (!valor || valor <= 0) {
+    return message.reply(
+      "❌ Use: !setpreco 2"
+    );
+  }
+
+  await configuracaoModel.definirPreco(
+    "GLOBAL",
+    valor
+  );
+
+  return message.reply(
+    `✅ Valor da partida definido para R$ ${valor.toFixed(2)}`
+  );
+}
+    // =========================
+    // 💰 Preço
+    // =========================
+if (cmd === "!preco") {
+
+  const config =
+    await configuracaoModel.obterConfiguracao(
+      "GLOBAL"
+    );
+
+  const valor =
+    Number(config?.valor_partida || 2);
+
+  return message.reply(
+    `💰 Valor atual da partida: R$ ${valor.toFixed(2)}`
+  );
+}
+
+
 
       // =========================
       // 📋 FILA

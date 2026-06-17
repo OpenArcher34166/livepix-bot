@@ -1,5 +1,6 @@
 const filaModel = require("../models/filaModel");
 const historicoModel = require("../models/historicoModel");
+const configuracaoModel = require("../models/configuracaoModel");
 
 // =========================
 // 💰 LIVEPIX / CRÉDITO
@@ -10,8 +11,20 @@ async function adicionar(nome, id, valor) {
   let partidasGeradas = 0;
 
   if (!jogador) {
-    partidasGeradas = Math.floor(valor / 2);
-    const credito = +(valor - partidasGeradas * 2).toFixed(2);
+
+    const config =
+  await configuracaoModel.obterConfiguracao("GLOBAL");
+
+const valorPartida =
+  Number(config?.valor_partida || 2);
+
+partidasGeradas =
+  Math.floor(valor / valorPartida);
+
+const credito =
+  +(valor - partidasGeradas * valorPartida).toFixed(2);
+
+
 
     await filaModel.adicionarJogador(
       nome,
@@ -34,9 +47,13 @@ async function adicionar(nome, id, valor) {
 
   const total = Number(valor) + Number(jogador.saldo_credito || 0);
 
-  partidasGeradas = Math.floor(total / 2);
+  partidasGeradas =
+  Math.floor(total / valorPartida);
 
-  const credito = +(total - partidasGeradas * 2).toFixed(2);
+const credito =
+  +(total - partidasGeradas * valorPartida).toFixed(2);
+
+
 
   await filaModel.atualizarJogador(
     id,
