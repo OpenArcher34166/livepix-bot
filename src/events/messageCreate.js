@@ -262,10 +262,7 @@ ${texto}
 📌 Status: ${j.status}`
         );
       }
-if (cmd === "!setup") {
-  console.log("COMANDO SETUP EXECUTADO");
-  return message.reply("Setup funcionando");
-}
+
       // 💣 RESET FILA
       // =========================
       if (cmd === "!resetfila") {
@@ -295,6 +292,28 @@ if (cmd === "!setup") {
 
         return message.reply("🏆 TOP 10:\n" + texto);
       }
+
+// =========================
+// ⚙️ SETUP SERVIDOR
+// =========================
+if (cmd === "!setup") {
+
+  if (!message.member.permissions.has("Administrator")) {
+    return message.reply("❌ Apenas administradores.");
+  }
+
+  await message.reply("⚙️ Criando estrutura...");
+
+  await setupServidor(message.guild);
+
+  return message.channel.send(
+    "✅ Estrutura criada com sucesso!"
+  );
+}
+
+
+
+
 
     } catch (err) {
       console.error("❌ ERRO MESSAGECREATE:", err);
