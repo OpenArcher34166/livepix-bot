@@ -1,3 +1,6 @@
+
+
+
 const {
   ChannelType,
   PermissionFlagsBits
@@ -46,6 +49,19 @@ async function setupServidor(guild) {
     ]
   });
 
+const servidorModel =
+require("../models/servidorModel");
+
+await servidorModel.salvar({
+  guild_id: guild.id,
+
+  canal_fila: fila.id,
+  canal_historico: historico.id,
+  canal_ranking: ranking.id,
+  canal_comandos: comandos.id,
+  canal_admin: admin.id
+});
+
   return {
     categoria,
     fila,
@@ -54,6 +70,12 @@ async function setupServidor(guild) {
     comandos,
     admin
   };
+}
+
+async function setupServidor(guild) {
+  console.log("FUNÇÃO SETUP CHAMADA");
+
+  return true;
 }
 
 module.exports = setupServidor;
