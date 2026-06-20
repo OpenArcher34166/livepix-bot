@@ -91,4 +91,11 @@ const client = new Client({
 require("./src/events/messageCreate")(client);
 require("./src/events/ready")(client);
 
-client.login(process.env.DISCORD_TOKEN);
+client.login(process.env.DISCORD_TOKEN)
+  .then(() => {
+    console.log("✅ LOGIN DISCORD ENVIADO");
+  })
+  .catch((err) => {
+    console.error("❌ ERRO LOGIN DISCORD:");
+    console.error(err);
+  });
