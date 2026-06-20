@@ -325,8 +325,12 @@ console.log("SETUP FINALIZADO");
 
 
     } catch (err) {
-      console.error("❌ ERRO MESSAGECREATE:", err);
-      return message.reply("❌ Erro interno no sistema.");
-    }
+  console.error("❌ ERRO MESSAGECREATE:");
+  console.error(err);
+
+  return message.reply(
+    `❌ ${err.message}`
+  );
+}
   });
 };
