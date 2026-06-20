@@ -4,6 +4,7 @@ const atualizarPainel = require("../utils/atualizarPainel");
 const configuracaoModel =
 require("../models/configuracaoModel");
 const setupServidor = require("../utils/setupServidor");
+console.log("TIPO SETUP:", typeof setupServidor);
 
 module.exports = (client) => {
 console.log("✅ MESSAGECREATE CARREGADO");
@@ -303,29 +304,41 @@ ${texto}
 // =========================
 if (cmd === "!setup") {
 
-  if (!message.member.permissions.has("Administrator")) {
-    return message.reply("❌ Apenas administradores.");
+  try {
+
+    console.log("🚀 COMANDO SETUP EXECUTADO");
+    console.log("TIPO SETUP:", typeof setupServidor);
+
+    if (!message.member.permissions.has("Administrator")) {
+      return message.reply("❌ Apenas administradores.");
+    }
+
+    await message.reply("⚙️ Criando estrutura...");
+
+    const resultado = await setupServidor(message.guild);
+
+    console.log("✅ SETUP CONCLUÍDO");
+    console.log(resultado);
+
+    return message.channel.send(
+      "✅ Estrutura criada com sucesso!"
+    );
+
+  } catch (err) {
+
+    console.error("❌ ERRO SETUP:");
+    console.error(err);
+
+    return message.reply(
+      `❌ SETUP: ${err.message}`
+    );
   }
-
-  await message.reply("⚙️ Criando estrutura...");
-
-console.log("ENTROU NO SETUP");
-
-await setupServidor(message.guild);
-
-console.log("SETUP FINALIZADO");
-
-  return message.channel.send(
-    "✅ Estrutura criada com sucesso!"
-  );
 }
 
 
 
-
-
     } catch (err) {
-  console.error("❌ ERRO MESSAGECREATE:");
+  console.error("❌ ERRO DEBTRU:");
   console.error(err);
 
   return message.reply(
