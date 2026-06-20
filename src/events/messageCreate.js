@@ -3,7 +3,16 @@ const hasPermission = require("../middleware/hasPermission");
 const atualizarPainel = require("../utils/atualizarPainel");
 const configuracaoModel =
 require("../models/configuracaoModel");
-const setupServidor = require("../utils/setupServidor");
+
+const setupServidorModule = require("../utils/setupServidor");
+
+console.log(setupServidorModule);
+
+const setupServidor =
+  setupServidorModule.default ||
+  setupServidorModule.setupServidor ||
+  setupServidorModule;
+
 console.log("TIPO SETUP:", typeof setupServidor);
 
 module.exports = (client) => {
