@@ -48,8 +48,14 @@ app.post("/webhook/livepix", async (req, res) => {
 
     // Atualiza o painel do Discord
     if (client?.isReady()) {
-      await atualizarPainel(client);
-    }
+const guild = client.guilds.cache.first();
+
+if (guild) {
+  await atualizarPainel(
+    client,
+    guild.id
+  );
+}    }
 
     console.log("✅ PROCESSADO COM SUCESSO");
 
