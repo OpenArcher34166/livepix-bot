@@ -1,20 +1,35 @@
 const connection = require("../database/connection");
 
 async function registrar(
+  guildId,
   acao,
   nomePix,
   idFreeFire,
   valor = 0,
   partidas = 0
 ) {
-  await connection.query(
-    `
-    INSERT INTO historico
-    (acao, nome_pix, id_freefire, valor, partidas)
-    VALUES ($1,$2,$3,$4,$5)
-    `,
-    [acao, nomePix, idFreeFire, valor, partidas]
-  );
+await connection.query(
+`
+INSERT INTO historico
+(
+  guild_id,
+  acao,
+  nome_pix,
+  id_freefire,
+  valor,
+  partidas
+)
+VALUES ($1,$2,$3,$4,$5,$6)
+`,
+[
+  guildId,
+  acao,
+  nomePix,
+  idFreeFire,
+  valor,
+  partidas
+]
+);
 }
 
 async function listarHistorico() {
