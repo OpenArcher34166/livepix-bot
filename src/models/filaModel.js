@@ -59,7 +59,7 @@ AND id_freefire = $2`,
 // =========================
 // ATUALIZAR COMPLETO
 // =========================
-async function atualizarJogador(id, partidas, credito, valorExtra = 0) {
+async function atualizarJogador(guildId, id, partidas, credito, valorExtra = 0) {
   await connection.query(
     `
     UPDATE fila
@@ -68,7 +68,7 @@ async function atualizarJogador(id, partidas, credito, valorExtra = 0) {
         valor = valor + $3
     WHERE id_freefire = $4
     `,
-    [partidas, credito, valorExtra, id]
+    [guildId, spartidas, credito, valorExtra, id]
   );
 }
 
