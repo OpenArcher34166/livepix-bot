@@ -31,7 +31,7 @@ async function atualizarPainel(client, guildId) {
 
     console.log("📌 Canal encontrado:", canal.name);
 
-    const fila = await filaController.listar();
+    const fila = await filaController.listar(guildId);
 
     let total = 0;
 
