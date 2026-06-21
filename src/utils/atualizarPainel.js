@@ -3,7 +3,12 @@ const servidorModel = require("../models/servidorModel");
 
 async function atualizarPainel(client, guildId) {
 
-console.log("GUILD ID RECEBIDO:", guildId);  
+
+  console.log("================================");
+  console.log("GUILD ID RECEBIDO:", guildId);
+  console.log("================================");
+
+  
   try {
 
     console.log("🔄 INICIANDO ATUALIZAÇÃO DO PAINEL");
