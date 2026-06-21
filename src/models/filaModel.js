@@ -28,20 +28,30 @@ async function adicionarJogador(guildId, nome, id, valor, partidas, credito = 0)
 // =========================
 // LISTAR FILA
 // =========================
-async function listarFila() {
+async function listarFila(guildId) {
   const { rows } = await connection.query(
-    `SELECT * FROM fila ORDER BY data_doacao ASC`
+    `
+    SELECT *
+    FROM fila
+    WHERE guild_id = $1
+    ORDER BY data_doacao ASC
+    `,
+    [guildId]
   );
+
   return rows;
 }
 
 // =========================
 // BUSCAR POR ID
 // =========================
-async function buscarPorIdFF(id) {
+async function buscarPorIdFF(guildId, id) {
   const { rows } = await connection.query(
-    `SELECT * FROM fila WHERE id_freefire = $1`,
-    [id]
+    `SELECT * FROM fila WHERE id_freefire = $1SELECT *
+FROM fila
+WHERE guild_id = $1
+AND id_freefire = $2`,
+    [guildId, id]
   );
   return rows[0];
 }
@@ -113,21 +123,32 @@ async function renomearId(a, b) {
 // =========================
 // RESET
 // =========================
-async function resetFila() {
-  await connection.query(`DELETE FROM fila`);
+async function resetFila(guildId) {
+  await connection.query(
+    `
+    DELETE FROM fila
+    WHERE guild_id = $1
+    `,
+    [guildId]
+  );
 }
 
 // =========================
 // TOP DOADORES
 // =========================
-async function topDoadores() {
+async function topDoadores(guildId){
   const { rows } = await connection.query(`
-    SELECT nome_pix, id_freefire, SUM(valor) AS total
-    FROM fila
-    GROUP BY id_freefire, nome_pix
-    ORDER BY total DESC
-    LIMIT 10
-  `);
+  SELECT
+    nome_pix,
+    id_freefire,
+    SUM(valor) AS total
+  FROM fila
+  WHERE guild_id = $1
+  GROUP BY id_freefire, nome_pix
+  ORDER BY total DESC
+  LIMIT 10
+`,
+[guildId]);
 
   return rows;
 }
