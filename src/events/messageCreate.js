@@ -50,7 +50,7 @@ console.log("✅ MESSAGECREATE CARREGADO");
           return message.reply("❌ Nome inválido");
         }
 
-        await filaController.adicionarManual(nome, id, partidas);
+        await filaController.adicionarManual(message.guild.id, nome, id, partidas);
 
        await atualizarPainel(
   client,
@@ -75,7 +75,7 @@ console.log("✅ MESSAGECREATE CARREGADO");
           return message.reply("❌ Uso: !credito id valor");
         }
 
-        await filaController.adicionar("LIVEPIX", id, valor);
+        await filaController.adicionar(message.guild.id, "LIVEPIX", id, valor);
         await atualizarPainel(
   client,
   message.guild.id
@@ -136,7 +136,7 @@ if (cmd === "!preco") {
       // 📋 FILA
       // =========================
       if (cmd === "!fila") {
-  const fila = await filaController.listar();
+  const fila = await filaController.listar(message.guild.id);
 
   if (!fila || fila.length === 0) {
     return message.reply("📋 Nenhum jogador na fila.");
@@ -174,7 +174,7 @@ ${texto}
           return message.reply("❌ Use: !jogar id");
         }
 
-        const res = await filaController.jogar(id);
+        const res = await filaController.jogar(message.guild.id, id);
 
        await atualizarPainel(
   client,
@@ -202,7 +202,7 @@ ${texto}
           return message.reply("❌ Uso: !renomear antigo novo");
         }
 
-        const ok = await filaController.renomear(oldId, newId);
+        const ok = await filaController.renomear(message.guild.id, oldId, newId);
 
         await atualizarPainel(
   client,
@@ -229,7 +229,7 @@ ${texto}
           return message.reply("❌ Uso: !addpartidas id quantidade");
         }
 
-        const ok = await filaController.addPartidas(id, qtd);
+        const ok = await filaController.addPartidas(message.guild.id, id, qtd);
 
         await atualizarPainel(
   client,
@@ -256,7 +256,7 @@ ${texto}
           return message.reply("❌ Uso: !rempartidas id quantidade");
         }
 
-        const ok = await filaController.remPartidas(id, qtd);
+        const ok = await filaController.remPartidas(message.guild.id, id, qtd);
 
         await atualizarPainel(
   client,
@@ -278,7 +278,7 @@ ${texto}
           return message.reply("❌ Use: !info id");
         }
 
-        const j = await filaController.info(id);
+        const j = await filaController.info(message.guild.id, id);
 
         if (!j) {
           return message.reply("❌ Não encontrado");
@@ -303,7 +303,7 @@ ${texto}
           return message.reply("❌ Apenas ADMIN pode usar isso.");
         }
 
-        await filaController.reset();
+        await filaController.reset(message.guild.id);
 await atualizarPainel(
   client,
   message.guild.id
@@ -315,7 +315,7 @@ await atualizarPainel(
       // 🏆 TOP 10
       // =========================
       if (cmd === "!top10") {
-        const top = await filaController.topDoadores();
+        const top = await filaController.topDoadores(message.guild.id);
 
         if (!top || top.length === 0) {
           return message.reply("🏆 Sem dados ainda.");
