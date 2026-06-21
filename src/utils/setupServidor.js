@@ -1,5 +1,6 @@
 
-
+const servidorModel =
+require("../models/servidorModel");
 
 const {
   ChannelType,
@@ -49,8 +50,6 @@ async function setupServidor(guild) {
     ]
   });
 
-const servidorModel =
-require("../models/servidorModel");
 
 await servidorModel.salvar({
   guild_id: guild.id,
@@ -70,12 +69,6 @@ await servidorModel.salvar({
     comandos,
     admin
   };
-}
-
-async function setupServidor(guild) {
-  console.log("FUNÇÃO SETUP CHAMADA");
-
-  return true;
 }
 
 module.exports = setupServidor;
