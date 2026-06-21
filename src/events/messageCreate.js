@@ -363,8 +363,17 @@ if (cmd === "!setup") {
     );
   }
 }
+const { PermissionFlagsBits } = require("discord.js");
 
-
+if (cmd === "!testeadmin") {
+  return message.reply(
+    String(
+      message.member.permissions.has(
+        PermissionFlagsBits.Administrator
+      )
+    )
+  );
+}
 
     } catch (err) {
   console.error("❌ ERRO DEBTRU:");
