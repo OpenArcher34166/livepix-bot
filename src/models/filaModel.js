@@ -3,19 +3,26 @@ const connection = require("../database/connection");
 // =========================
 // ADICIONAR JOGADOR
 // =========================
-async function adicionarJogador(
-  guildId,
-  nome,
-  id,
-  valor,
-  partidas,
-  credito = 0
-) {
+async function adicionarJogador(guildId, nome, id, valor, partidas, credito = 0) {
   await connection.query(
-    `INSERT INTO fila (nome_pix, id_freefire, valor, partidas, saldo_credito)
-     VALUES ($1, $2, $3, $4, $5)`,
-    [nome, id, valor || 0, partidas, credito]
-  );
+  `INSERT INTO fila (
+    guild_id,
+    nome_pix,
+    id_freefire,
+    valor,
+    partidas,
+    saldo_credito
+  )
+  VALUES ($1, $2, $3, $4, $5, $6)`,
+  [
+    guildId,
+    nome,
+    id,
+    valor || 0,
+    partidas,
+    credito
+  ]
+);
 }
 
 // =========================
