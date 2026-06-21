@@ -60,6 +60,7 @@ await servidorModel.salvar({
   canal_comandos: comandos.id,
   canal_admin: admin.id
 });
+  console.log("✅ ESTRUTURA CRIADA");
 
   return {
     categoria,
