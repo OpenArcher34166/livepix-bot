@@ -34,6 +34,7 @@ async function listarFila(guildId) {
     SELECT *
     FROM fila
     WHERE guild_id = $1
+    AND guild_id = $X
     ORDER BY data_doacao ASC
     `,
     [guildId]
@@ -50,7 +51,8 @@ async function buscarPorIdFF(guildId, id) {
     `SELECT * FROM fila WHERE id_freefire = $1SELECT *
 FROM fila
 WHERE guild_id = $1
-AND id_freefire = $2`,
+AND id_freefire = $2
+AND guild_id = $X`,
     [guildId, id]
   );
   return rows[0];
@@ -67,6 +69,7 @@ async function atualizarJogador(guildId, id, partidas, credito, valorExtra = 0) 
         saldo_credito = $2,
         valor = valor + $3
     WHERE id_freefire = $4
+    AND guild_id = $X
     `,
     [guildId, spartidas, credito, valorExtra, id]
   );
@@ -75,48 +78,51 @@ async function atualizarJogador(guildId, id, partidas, credito, valorExtra = 0) 
 // =========================
 // REMOVER PARTIDAS
 // =========================
-async function removerPartidas(id, qtd) {
+async function removerPartidas(guildId, id, qtd) {
   await connection.query(
     `
     UPDATE fila 
     SET partidas = GREATEST(partidas - $1, 0)
     WHERE id_freefire = $2
-    `,
-    [qtd, id]
+    AND guild_id = $X    `,
+    [guildId, qtd, id]
   );
 }
 
 // =========================
 // ADICIONAR PARTIDAS
 // =========================
-async function adicionarPartidas(id, qtd) {
+async function adicionarPartidas(guildId, id, qtd) {
   await connection.query(
     `
     UPDATE fila 
     SET partidas = partidas + $1
     WHERE id_freefire = $2
+    AND guild_id = $X
     `,
-    [qtd, id]
+    [guildId, qtd, id]
   );
 }
 
 // =========================
 // FINALIZAR
 // =========================
-async function finalizarJogador(id) {
+async function finalizarJogador(guildId, id) {
   await connection.query(
-    `UPDATE fila SET status = 'FINALIZADO' WHERE id_freefire = $1`,
-    [id]
+    `UPDATE fila SET status = 'FINALIZADO' WHERE id_freefire = $1
+    AND guild_id = $X`,
+    [guildId, id]
   );
 }
 
 // =========================
 // RENOMEAR ID
 // =========================
-async function renomearId(a, b) {
+async function renomearId(guildId, a, b) {
   await connection.query(
-    `UPDATE fila SET id_freefire = $1 WHERE id_freefire = $2`,
-    [b, a]
+    `UPDATE fila SET id_freefire = $1 WHERE id_freefire = $2
+    AND guild_id = $X`,
+    [guildId, b, a]
   );
 }
 
@@ -128,6 +134,7 @@ async function resetFila(guildId) {
     `
     DELETE FROM fila
     WHERE guild_id = $1
+    AND guild_id = $X
     `,
     [guildId]
   );
@@ -144,6 +151,7 @@ async function topDoadores(guildId){
     SUM(valor) AS total
   FROM fila
   WHERE guild_id = $1
+  AND guild_id = $X
   GROUP BY id_freefire, nome_pix
   ORDER BY total DESC
   LIMIT 10
