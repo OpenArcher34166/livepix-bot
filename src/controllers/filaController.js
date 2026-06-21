@@ -1,33 +1,33 @@
 const filaService = require("../services/filaService");
 
 module.exports = {
-  adicionar: (nome, id, valor) =>
-    filaService.adicionar(nome, id, valor),
+  adicionar: (guildId, nome, id, valor) =>
+    filaService.adicionar(guildId, nome, id, valor),
 
-  adicionarManual: (nome, id, partidas) =>
-    filaService.adicionarManual(nome, id, partidas),
+  adicionarManual: (guildId, nome, id, partidas) =>
+    filaService.adicionarManual(guildId, nome, id, partidas),
 
-  listar: () =>
-    filaService.listar(),
+  listar: (guildId) =>
+    filaService.listar(guildId),
 
-  jogar: (id) =>
-    filaService.jogar(id),
+  jogar: (guildId, id) =>
+    filaService.jogar(guildId, id),
 
-  renomear: (a, b) =>
-    filaService.renomear(a, b),
+  renomear: (guildId, a, b) =>
+    filaService.renomear(guildId, a, b),
 
-  topDoadores: () =>
-    filaService.topDoadores(),
+  topDoadores: (guildId) =>
+    filaService.topDoadores(guildId),
 
-  addPartidas: (id, qtd) =>
-    filaService.addPartidas(id, qtd),
+  addPartidas: (guildId, id, qtd) =>
+    filaService.addPartidas(guildId, id, qtd),
 
-  remPartidas: (id, qtd) =>
-    filaService.remPartidas(id, qtd),
+  remPartidas: (guildId, id, qtd) =>
+    filaService.remPartidas(guildId, id, qtd),
 
-  info: (id) =>
-    filaService.info(id),
+  info: (guildId, id) =>
+    filaService.info(guildId, id),
 
-  reset: () =>
-    filaService.reset()
+  reset: (guildId) =>
+    filaService.reset(guildId)
 };
