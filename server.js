@@ -39,23 +39,29 @@ app.post("/webhook/livepix", async (req, res) => {
       return res.status(400).send("valor inválido");
     }
 
-    // Salva no banco
-    await filaController.adicionar(
+  
+    // Atualiza o painel do Discord
+    if (client?.isReady()) {
+const guild = client.guilds.cache.first();
+
+if (!guild) { 
+    return res.status(500).send("Servidor não encontrado");
+
+}  
+
+await filaController.adicionar(
+      guild.Id, 
       nome_pix,
       id_freefire,
       valorNum
     );
 
-    // Atualiza o painel do Discord
-    if (client?.isReady()) {
-const guild = client.guilds.cache.first();
-
-if (guild) {
-  await atualizarPainel(
+await atualizarPainel(
     client,
     guild.id
   );
-}    }
+
+}
 
     console.log("✅ PROCESSADO COM SUCESSO");
 
