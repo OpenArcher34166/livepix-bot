@@ -5,7 +5,6 @@ const configuracaoModel =
 require("../models/configuracaoModel");
 
 const setupServidorModule = require("../utils/setupServidor");
-
 console.log(setupServidorModule);
 
 const setupServidor =
@@ -52,7 +51,11 @@ console.log("✅ MESSAGECREATE CARREGADO");
         }
 
         await filaController.adicionarManual(nome, id, partidas);
-        await atualizarPainel(client);
+
+       await atualizarPainel(
+  client,
+  message.guild.id
+);
 
         return message.reply("🎮 Jogador adicionado com sucesso!");
       }
@@ -73,7 +76,10 @@ console.log("✅ MESSAGECREATE CARREGADO");
         }
 
         await filaController.adicionar("LIVEPIX", id, valor);
-        await atualizarPainel(client);
+        await atualizarPainel(
+  client,
+  message.guild.id
+);
 
         return message.reply(`💰 Crédito adicionado: R$ ${valor.toFixed(2)}`);
       }
@@ -170,7 +176,10 @@ ${texto}
 
         const res = await filaController.jogar(id);
 
-        await atualizarPainel(client);
+       await atualizarPainel(
+  client,
+  message.guild.id
+);
 
         if (!res) return message.reply("❌ Jogador não encontrado");
         if (res.finalizado) return message.reply("🏁 Jogador finalizado!");
@@ -195,7 +204,10 @@ ${texto}
 
         const ok = await filaController.renomear(oldId, newId);
 
-        await atualizarPainel(client);
+        await atualizarPainel(
+  client,
+  message.guild.id
+);
 
         if (!ok) return message.reply("❌ Não encontrado");
 
@@ -219,7 +231,10 @@ ${texto}
 
         const ok = await filaController.addPartidas(id, qtd);
 
-        await atualizarPainel(client);
+        await atualizarPainel(
+  client,
+  message.guild.id
+);
 
         if (!ok) return message.reply("❌ Não encontrado");
 
@@ -243,7 +258,10 @@ ${texto}
 
         const ok = await filaController.remPartidas(id, qtd);
 
-        await atualizarPainel(client);
+        await atualizarPainel(
+  client,
+  message.guild.id
+);
 
         if (!ok) return message.reply("❌ Não encontrado");
 
@@ -286,8 +304,10 @@ ${texto}
         }
 
         await filaController.reset();
-        await atualizarPainel(client);
-
+await atualizarPainel(
+  client,
+  message.guild.id
+);
         return message.reply("💣 Fila resetada!");
       }
 
