@@ -24,7 +24,7 @@ console.log("TIPO:", typeof configuracaoModel.obterConfiguracao);
 
 const config =
   await configuracaoModel.obterConfiguracao(
-    "GLOBAL"
+  guildId
   );
 
 const valorPartida =

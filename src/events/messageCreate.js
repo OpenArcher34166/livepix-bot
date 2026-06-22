@@ -104,7 +104,7 @@ if (cmd === "!setpreco") {
   }
 
   await configuracaoModel.definirPreco(
-    "GLOBAL",
+    message.guild.id,
     valor
   );
 
