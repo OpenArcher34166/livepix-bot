@@ -17,6 +17,8 @@ console.log("TIPO SETUP:", typeof setupServidor);
 module.exports = (client) => {
 console.log("✅ MESSAGECREATE CARREGADO");
 
+console.log("COMANDO:", cmd);
+console.log("ARGS:", args);
 
 
 
