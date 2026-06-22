@@ -1,7 +1,8 @@
 const filaModel = require("../models/filaModel");
 const historicoModel = require("../models/historicoModel");
 const configuracaoModel = require("../models/configuracaoModel");
-
+console.log("CONFIG MODEL:");
+console.log(configuracaoModel);
 // =========================
 // 💰 LIVEPIX / CRÉDITO
 // =========================
@@ -43,6 +44,7 @@ const credito =
     );
 
     await historicoModel.registrar(
+      guildId,
       "DOACAO",
       nome,
       id,
@@ -72,6 +74,7 @@ const credito =
   );
 
   await historicoModel.registrar(
+    guildId,
     "DOACAO",
     nome,
     id,
@@ -106,6 +109,7 @@ async function adicionarManual(guildId, nome, id, partidas) {
   }
 
   await historicoModel.registrar(
+    guildId,
     "ADD_MANUAL",
     nome,
     id,
@@ -132,6 +136,7 @@ async function jogar(guildId, id) {
   await filaModel.removerPartidas(guildId, id, 1);
 
   await historicoModel.registrar(
+    guildId,
     "JOGOU",
     jogador.nome_pix,
     id,
@@ -145,6 +150,7 @@ async function jogar(guildId, id) {
     await filaModel.finalizarJogador(guildId, id);
 
     await historicoModel.registrar(
+      guildId,
       "FINALIZADO",
       jogador.nome_pix,
       id,
@@ -174,6 +180,7 @@ async function renomear(guildId, a, b) {
   await filaModel.renomearId(guildId, a, b);
 
   await historicoModel.registrar(
+    guildId,
     "RENOMEAR",
     jogador.nome_pix,
     `${a} -> ${b}`,
@@ -201,6 +208,7 @@ async function addPartidas(guildId, id, qtd) {
   await filaModel.adicionarPartidas(guildId, id, qtd);
 
   await historicoModel.registrar(
+    guildId,
     "ADD_PARTIDAS",
     jogador.nome_pix,
     id,
@@ -222,6 +230,7 @@ async function remPartidas(guildId, id, qtd) {
   await filaModel.removerPartidas(guildId, id, qtd);
 
   await historicoModel.registrar(
+    guildId,
     "REM_PARTIDAS",
     jogador.nome_pix,
     id,
@@ -246,6 +255,7 @@ async function reset(guildId) {
   await filaModel.resetFila(guildId);
 
   await historicoModel.registrar(
+    guildId,
     "RESET",
     "SISTEMA",
     "FILA",
