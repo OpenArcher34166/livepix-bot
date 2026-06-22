@@ -119,7 +119,7 @@ if (cmd === "!preco") {
 
   const config =
     await configuracaoModel.obterConfiguracao(
-      "GLOBAL"
+      guild
     );
 
   const valor =
