@@ -3,6 +3,10 @@ const historicoModel = require("../models/historicoModel");
 const configuracaoModel = require("../models/configuracaoModel");
 console.log("CONFIG MODEL:");
 console.log(configuracaoModel);
+
+console.log("ARQUIVO FILASERVICE CARREGADO");
+console.log(__filename);
+
 // =========================
 // 💰 LIVEPIX / CRÉDITO
 // =========================
@@ -12,6 +16,11 @@ async function adicionar(guildId, nome, id, valor) {
   const jogador = await filaModel.buscarPorIdFF(guildId, id);
 
   let partidasGeradas = 0;
+
+
+console.log("GUILD:", guildId);
+console.log("TIPO:", typeof configuracaoModel.obterConfiguracao);
+
 
 const config =
   await configuracaoModel.obterConfiguracao(
