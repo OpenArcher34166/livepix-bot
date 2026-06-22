@@ -91,13 +91,14 @@ async function atualizarJogador(
 // =========================
 // REMOVER PARTIDAS
 // =========================
-async function removerPartidas(id, qtd, guildId) {
+async function removerPartidas(guildId, id, qtd) {
   await connection.query(
     `
-    UPDATE fila 
+    UPDATE fila
     SET partidas = GREATEST(partidas - $1, 0)
     WHERE id_freefire = $2
-    AND guild_id = $3    `,
+    AND guild_id = $3
+    `,
     [qtd, id, guildId]
   );
 }
@@ -120,10 +121,14 @@ async function adicionarPartidas(guildId, id, qtd) {
 // =========================
 // FINALIZAR
 // =========================
-async function finalizarJogador(id, guildId) {
+async function finalizarJogador(guildId, id) {
   await connection.query(
-    `UPDATE fila SET status = 'FINALIZADO' WHERE id_freefire = $1
-    AND guild_id = $2`,
+    `
+    UPDATE fila
+    SET status = 'FINALIZADO'
+    WHERE id_freefire = $1
+    AND guild_id = $2
+    `,
     [id, guildId]
   );
 }
