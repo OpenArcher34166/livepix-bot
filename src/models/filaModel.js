@@ -63,7 +63,13 @@ async function buscarPorIdFF(guildId, id) {
 // =========================
 // ATUALIZAR COMPLETO
 // =========================
-async function atualizarJogador(id, partidas, credito, valorExtra = 0, guildId) {
+async function atualizarJogador(
+  guildId,
+  id,
+  partidas,
+  credito,
+  valorExtra = 0
+) {
   await connection.query(
     `
     UPDATE fila
@@ -73,10 +79,15 @@ async function atualizarJogador(id, partidas, credito, valorExtra = 0, guildId) 
     WHERE id_freefire = $4
     AND guild_id = $5
     `,
-    [ partidas, credito, valorExtra, id, guildId]
+    [
+      partidas,
+      credito,
+      valorExtra,
+      id,
+      guildId
+    ]
   );
 }
-
 // =========================
 // REMOVER PARTIDAS
 // =========================
